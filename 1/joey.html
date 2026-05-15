@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Joey 摄影</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&display=swap');
+
+  :root {
+    --bg: #0d0d0d;
+    --surface: #141414;
+    --surface-light: #1a1a1a;
+    --text: #c8c0b8;
+    --text-dim: #78736c;
+    --text-bright: #e8e2d8;
+    --accent: #b8936e;
+    --accent-light: #d4b896;
+    --gold: #c4a87c;
+    --border: #262422;
+    --radius: 2px;
+    --transition: 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  * {
+    margin: 0; padding: 0; box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) var(--bg);
+  }
+
+  body {
+    font-family: 'Noto Sans SC', 'Noto Serif SC', serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ── Navigation ── */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    padding: 0 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 72px;
+    backdrop-filter: blur(12px);
+    background: rgba(13, 13, 13, 0.75);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: var(--transition);
+  }
+
+  nav .logo {
+    font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+    font-size: 1.6rem;
+    font-weight: 400;
+    font-style: italic;
+    letter-spacing: 0.04em;
+    color: var(--text-bright);
+  }
+
+  nav .logo span { color: var(--accent); }
+
+  nav ul { display: flex; list-style: none; gap: 40px; }
+
+  nav ul li a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    position: relative;
+    padding: 4px 0;
+    transition: color 0.4s;
+  }
+
+  nav ul li a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--accent);
+    transition: width var(--transition);
+  }
+
+  nav ul li a:hover,
+  nav ul li a.active { color: var(--text-bright); }
+  nav ul li a:hover::after,
+  nav ul li a.active::after { width: 100%; }
+
+  /* ── Hero ── */
+  .hero {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .hero-bg { position: absolute; inset: 0; z-index: 0; }
+
+  .hero-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.55) saturate(0.8);
+    transform: scale(1.08);
+    animation: heroZoom 8s ease-out forwards;
+  }
+
+  @keyframes heroZoom { to { transform: scale(1); } }
+
+  .hero-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at center, transparent 30%, rgba(13,13,13,0.7) 100%),
+      linear-gradient(to top, var(--bg) 0%, transparent 50%);
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    animation: fadeUp 1.2s 0.3s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+
+  .hero-content .tag {
+    font-size: 0.75rem;
+    letter-spacing: 0.5em;
+    color: var(--accent);
+    margin-bottom: 24px;
+    font-weight: 400;
+  }
+
+  .hero-scroll {
+    position: absolute;
+    bottom: 48px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    animation: fadeUp 1.2s 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+
+  .hero-scroll span {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--text-dim);
+  }
+
+  .hero-scroll .line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--accent), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; transform: scaleY(1); }
+    50% { opacity: 1; transform: scaleY(1.3); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Section Common ── */
+  section { padding: 120px 48px; max-width: 1400px; margin: 0 auto; }
+
+  .section-header { text-align: center; margin-bottom: 80px; }
+
+  .section-header .num {
+    font-size: 0.7rem;
+    letter-spacing: 0.4em;
+    color: var(--accent);
+    margin-bottom: 12px;
+    font-weight: 400;
+  }
+
+  .section-header h2 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 1.4rem;
+    font-weight: 300;
+    color: var(--text-bright);
+    letter-spacing: 0.06em;
+  }
+
+  .section-header .line {
+    width: 40px;
+    height: 1px;
+    background: var(--accent);
+    margin: 24px auto 0;
+  }
+
+  .section-header .desc {
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    margin-top: 16px;
+    letter-spacing: 0.1em;
+    font-weight: 300;
+  }
+
+  /* ── About ── */
+  .about-grid {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 80px;
+  }
+
+  .about-photo {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .about-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(20%);
+    transition: filter 0.6s;
+  }
+
+  .about-photo:hover img { filter: grayscale(0%); }
+
+  .about-photo::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 1px solid var(--accent);
+    opacity: 0.4;
+    animation: ringPulse 3s ease-in-out infinite;
+  }
+
+  @keyframes ringPulse {
+    0%, 100% { opacity: 0.2; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.04); }
+  }
+
+  .about-text { max-width: 480px; }
+
+  .about-text h3 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 0.8rem;
+    font-weight: 10;
+    color: var(--text-bright);
+    margin-bottom: 20px;
+    letter-spacing: 0.16em;
+  }
+
+  .about-text p {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    line-height: 2;
+    font-weight: 300;
+  }
+
+  .about-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 28px;
+    padding-top: 28px;
+    border-top: 1px solid var(--border);
+  }
+
+  .about-info .info-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+
+  .about-info .info-item .label {
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    font-size: 0.7rem;
+    min-width: 48px;
+  }
+
+  /* ── Standard Gallery (备用) ── */
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 6px;
+  }
+
+  .gallery .gallery-item {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    aspect-ratio: 4 / 3;
+    background: var(--surface);
+  }
+
+  .gallery .gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s cubic-bezier(0.22, 0.61, 0.36, 1),
+                filter 0.8s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  .gallery .gallery-item:hover img {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+  }
+
+  .gallery .gallery-item .overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(13,13,13,0.7) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+    display: flex;
+    align-items: flex-end;
+    padding: 28px;
+  }
+
+  .gallery .gallery-item:hover .overlay { opacity: 1; }
+
+  .gallery .gallery-item .overlay span {
+    color: var(--text-bright);
+    font-size: 0.8rem;
+    letter-spacing: 0.15em;
+    font-weight: 300;
+    transform: translateY(12px);
+    transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  .gallery .gallery-item:hover .overlay span { transform: translateY(0); }
+
+  /* ── Card Stack (人像/风景/纪实) ── */
+  .gallery-artistic {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 520px;
+    overflow: hidden;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: pan-y;
+  }
+
+  .gallery-artistic.dragging {
+    cursor: grabbing;
+  }
+
+  .gallery-artistic .gallery-item {
+    position: absolute;
+    width: 280px;
+    height: 400px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--surface);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    cursor: pointer;
+    will-change: transform;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-perspective: 1000;
+    perspective: 1000;
+  }
+
+  .gallery-artistic .gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none;
+  }
+
+  /* Center card — bright & prominent */
+  .gallery-artistic .gallery-item.pos-center {
+    z-index: 5;
+    filter: brightness(1.08);
+    opacity: 1;
+    transform: translateX(0px) scale(1);
+    box-shadow: 0 8px 48px rgba(0,0,0,0.55), 0 0 40px rgba(184,147,110,0.1);
+    cursor: pointer;
+  }
+
+  /* Adjacent cards (±1) — dimmed */
+  .gallery-artistic .gallery-item.pos-left1,
+  .gallery-artistic .gallery-item.pos-right1 {
+    z-index: 3;
+    filter: brightness(0.45);
+    opacity: 0.7;
+  }
+
+  /* Far cards (±2) — darker */
+  .gallery-artistic .gallery-item.pos-left2,
+  .gallery-artistic .gallery-item.pos-right2 {
+    z-index: 2;
+    filter: brightness(0.22);
+    opacity: 0.4;
+  }
+
+  /* Hidden cards — invisible, no interaction */
+  .gallery-artistic .gallery-item.pos-hidden {
+    z-index: 1;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Overlay visible only on center card */
+  .gallery-artistic .gallery-item .overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(13,13,13,0.7) 0%, transparent 55%);
+    opacity: 0;
+    transition: opacity 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+    display: flex;
+    align-items: flex-end;
+    padding: 24px;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .gallery-artistic .gallery-item.pos-center .overlay {
+    opacity: 1;
+  }
+
+  .gallery-artistic .gallery-item .overlay span {
+    color: var(--text-bright);
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    font-weight: 300;
+    transform: translateY(0);
+  }
+
+  /* ── Card Stack Dots ── */
+  .card-stack-dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 28px;
+  }
+
+  .card-stack-dots .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  .card-stack-dots .dot.active {
+    background: var(--accent);
+    width: 22px;
+    border-radius: 3px;
+  }
+
+  /* ── Aspect ratios per image (备用：卡片堆叠不依赖这些) ── */
+  .ar-tall   { aspect-ratio: 2 / 3; }
+  .ar-wide   { aspect-ratio: 21 / 9; }
+  .ar-mid    { aspect-ratio: 16 / 9; }
+  .ar-square { aspect-ratio: 1 / 1; }
+  .ar-tallest { aspect-ratio: 9 / 16; }
+  .cs-1 { grid-column: span 1; }
+  .cs-2 { grid-column: span 2; }
+  .cs-3 { grid-column: span 3; }
+
+  /* ── Contact ── */
+  .contact-section { text-align: center; padding: 120px 48px 80px; }
+
+  .contact-grid {
+    display: flex;
+    justify-content: center;
+    gap: 80px;
+    margin-top: 60px;
+  }
+
+  .contact-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contact-item .icon { font-size: 1.2rem; color: var(--accent); }
+  .contact-item .label {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+  }
+
+  .contact-item .copy-btn {
+    cursor: pointer;
+    padding: 8px 20px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--text-bright);
+    font-family: inherit;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+    transition: all 0.3s;
+  }
+
+  .contact-item .copy-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent-light);
+  }
+
+  .copied-toast {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--surface-light);
+    border: 1px solid var(--accent);
+    color: var(--text-bright);
+    padding: 10px 28px;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    border-radius: var(--radius);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+    z-index: 10000;
+    pointer-events: none;
+  }
+
+  .copied-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* ── Lightbox ── */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(8, 8, 8, 0.96);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+    cursor: pointer;
+  }
+
+  .lightbox.active { opacity: 1; pointer-events: auto; }
+
+  .lightbox img {
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    cursor: default;
+    transition: transform 0.1s ease-out, opacity 0.35s ease-out;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    user-select: none;
+    -webkit-user-drag: none;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: 32px;
+    right: 40px;
+    width: 40px;
+    height: 40px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-dim);
+    font-size: 1.6rem;
+    transition: color 0.3s;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .lightbox-close:hover { color: var(--text-bright); }
+
+  /* ── Scroll reveal ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.8s cubic-bezier(0.22, 0.61, 0.36, 1),
+                transform 0.8s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center;
+    padding: 40px 48px 60px;
+    border-top: 1px solid var(--border);
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  footer p { font-size: 0.7rem; color: var(--text-dim); letter-spacing: 0.15em; }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    nav { padding: 0 24px; height: 60px; }
+    nav ul { gap: 20px; }
+    nav ul li a { font-size: 0.7rem; letter-spacing: 0.1em; }
+    section { padding: 80px 24px; }
+    .hero-content h1 { font-size: 2.2rem; }
+    .about-grid { flex-direction: column; gap: 40px; text-align: center; }
+    .about-text { max-width: 100%; }
+    .about-info .info-item { justify-content: center; }
+    .gallery { grid-template-columns: 1fr; }
+    .gallery-artistic { height: 420px; }
+    .gallery-artistic .gallery-item { width: 200px; height: 290px; }
+    .card-stack-dots { margin-top: 20px; }
+    .contact-grid { flex-direction: column; gap: 40px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav id="nav">
+  <div class="logo">J<span>oey</span></div>
+  <ul>
+    <li><a href="#home" class="active">主页</a></li>
+    <li><a href="#about">个人</a></li>
+    <li><a href="#portrait">人像</a></li>
+    <li><a href="#landscape">风景</a></li>
+    <li><a href="#documentary">纪实</a></li>
+    <li><a href="#misc">-，-</a></li>
+    <li><a href="#contact">联系</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<section class="hero" id="home">
+  <div class="hero-bg">
+    <img src="images/home/home.jpg" alt="Joey Photography">
+  </div>
+  <div class="hero-content">
+    <p class="tag">Photography is about capturing moments of beauty</p>
+  </div>
+  <div class="hero-scroll">
+    <span>向下探索</span>
+    <div class="line"></div>
+  </div>
+</section>
+
+<!-- About -->
+<section id="about">
+  <div class="section-header reveal">
+    <p class="num">01</p>
+    <h2>乔亦-Joey</h2>
+    <div class="line"></div>
+  </div>
+
+  <div class="about-grid reveal">
+    <div class="about-photo">
+      <img src="images/Person/P.jpg" alt="摄影师">
+    </div>
+    <div class="about-text">
+      <h3>"做自己喜欢的事"</h3>
+      <p>
+      【 相机 ：富士 X - h2s 】【  爱好 ：电影、文学、音乐、摄影、插画、旅行  】【 喜欢导演：阿巴斯·基亚罗斯塔米、是枝裕和 】【 喜欢作家：加西亚·马尔克斯、川端康成 】【 喜欢歌手：陶喆、Bilish Eilish 】
+        <br><br>
+        随记：飘渺纷飞的雪脱落在了粉色系云层之下，冰河与雪地被一道优美弧线分隔开，几棵枯树直立于河面之上，还伴随浓浓雾气附着，唯见河溪处落在瀑布下方，水色透亮，冲击下来的地带呈现淡蓝宝石般净美，冰面犹如镜子一般呈现出林木的倒影，点点滴滴的雪错落在冰痕之上。
+      </p>
+      <div class="about-info">
+        <div class="info-item">
+          <span class="label">微信</span>
+          <span>mozoyoo</span>
+        </div>
+        <div class="info-item">
+          <span class="label">邮箱</span>
+          <span>m_zeye@outlook.com</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Portrait -->
+<section id="portrait">
+  <div class="section-header reveal">
+    <p class="num">02</p>
+    <h2>人像</h2>
+    <div class="line"></div>
+    <p class="desc">Person</p>
+  </div>
+
+  <div class="gallery-artistic reveal">
+    <div class="gallery-item cs-1 ar-tall" data-src="images/portrait/P 1.jpeg">
+      <img src="images/portrait/P 1.jpeg" alt="人像 1" loading="lazy">
+      <div class="overlay"><span>人像摄影</span></div>
+    </div>
+    <div class="gallery-item cs-1 ar-tall" data-src="images/portrait/P 2.jpg">
+      <img src="images/portrait/P 2.jpg" alt="人像 2" loading="lazy">
+      <div class="overlay"><span>人像摄影</span></div>
+    </div>
+    <div class="gallery-item cs-1 ar-tall" data-src="images/portrait/P 3.jpeg">
+      <img src="images/portrait/P 3.jpeg" alt="人像 3" loading="lazy">
+      <div class="overlay"><span>人像摄影</span></div>
+    </div>
+    <div class="gallery-item cs-2 ar-wide" data-src="images/portrait/p 4.jpeg">
+      <img src="images/portrait/p 4.jpeg" alt="人像 4" loading="lazy">
+      <div class="overlay"><span>人像摄影</span></div>
+    </div>
+    <div class="gallery-item cs-1 ar-mid" data-src="images/portrait/P 5.jpg">
+      <img src="images/portrait/P 5.jpg" alt="人像 5" loading="lazy">
+      <div class="overlay"><span>人像摄影</span></div>
+    </div>
+</div>
+</section>
+
+<!-- Landscape -->
+<section id="landscape">
+  <div class="section-header reveal">
+    <p class="num">03</p>
+    <h2>风景</h2>
+    <div class="line"></div>
+    <p class="desc">landscape</p>
+  </div>
+
+  <div class="gallery-artistic reveal">
+    <div class="gallery-item cs-3 ar-wide" data-src="images/landscape/S1.jpeg">
+      <img src="images/landscape/S1.jpeg" alt="风景 1" loading="lazy">
+      <div class="overlay"><span>风景摄影</span></div>
+    </div>
+    <div class="gallery-item cs-2 ar-wide" data-src="images/landscape/S2.jpg">
+      <img src="images/landscape/S2.jpg" alt="风景 2" loading="lazy">
+      <div class="overlay"><span>风景摄影</span></div>
+    </div>
+    <div class="gallery-item cs-1 ar-mid" data-src="images/landscape/S3.jpg">
+      <img src="images/landscape/S3.jpg" alt="风景 3" loading="lazy">
+      <div class="overlay"><span>风景摄影</span></div>
+    </div>
+    <div class="gallery-item cs-1 ar-square" data-src="images/landscape/S4.jpg">
+      <img src="images/landscape/S4.jpg" alt="风景 4" loading="lazy">
+      <div class="overlay"><span>风景摄影</span></div>
+    </div>
+    <div class="gallery-item cs-1 ar-mid" data-src="images/landscape/S5.jpg">
+      <img src="images/landscape/S5.jpg" alt="风景 5" loading="lazy">
+      <div class="overlay"><span>风景摄影</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- Documentary -->
+<section id="documentary">
+  <div class="section-header reveal">
+    <p class="num">04</p>
+    <h2>纪实</h2>
+    <div class="line"></div>
+    <p class="desc">documentary</p>
+  </div>
+
+  <div class="gallery-artistic reveal">
+    <div class="gallery-item cs-1 ar-tallest" data-src="images/documentary/D1.jpeg">
+      <img src="images/documentary/D1.jpeg" alt="纪实 1" loading="lazy">
+      <div class="overlay"><span>纪实摄影</span></div>
+    </div>
+    <div class="gallery-item cs-1 ar-square" data-src="images/documentary/D2.jpg">
+      <img src="images/documentary/D2.jpg" alt="纪实 2" loading="lazy">
+      <div class="overlay"><span>纪实摄影</span></div>
+    </div>
+    <div class="gallery-item cs-1 ar-wide" data-src="images/documentary/D3.jpeg">
+      <img src="images/documentary/D3.jpeg" alt="纪实 3" loading="lazy">
+      <div class="overlay"><span>纪实摄影</span></div>
+    </div>
+    <div class="gallery-item cs-1 ar-square" data-src="images/documentary/D4.jpg">
+      <img src="images/documentary/D4.jpg" alt="纪实 4" loading="lazy">
+      <div class="overlay"><span>纪实摄影</span></div>
+    </div>
+</div>
+</section>
+
+<!-- Misc -->
+<section id="misc">
+  <div class="section-header reveal">
+    <p class="num">05</p>
+    <h2>- ，-</h2>
+    <div class="line"></div>
+  </div>
+
+  <div class="gallery-artistic reveal">
+    <div class="gallery-item cs-1 ar-tall" data-src="images/misc/1.jpg">
+      <img src="images/misc/1.jpg" alt="-，- 1" loading="lazy">
+      <div class="overlay"><span>-，-</span></div>
+    </div>
+    <div class="gallery-item cs-1 ar-tall" data-src="images/misc/2.jpg">
+      <img src="images/misc/2.jpg" alt="-，- 2" loading="lazy">
+      <div class="overlay"><span>-，-</span></div>
+    </div></div>
+</section>
+
+<!-- Contact -->
+<section class="contact-section" id="contact">
+  <div class="section-header reveal">
+    <p class="num">06</p>
+    <h2>联系</h2>
+    <div class="line"></div>
+  </div>
+
+  <div class="contact-grid reveal">
+    <div class="contact-item">
+      <div class="icon">&#x1F4F1;</div>
+      <div class="label">微信</div>
+      <button class="copy-btn" data-copy="mozoyoo">mozoyoo</button>
+    </div>
+    <div class="contact-item">
+      <div class="icon">&#x260E;</div>
+      <div class="label">电话</div>
+      <button class="copy-btn" data-copy="19872314812">19872314812</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2026 JOEY PHOTOGRAPHY. ALL RIGHTS RESERVED.</p>
+</footer>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose">&times;</button>
+  <img src="" alt="" id="lightboxImg">
+</div>
+
+<!-- Toast -->
+<div class="copied-toast" id="toast"></div>
+
+<script>
+(function() {
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightboxImg');
+  const lightboxClose = document.getElementById('lightboxClose');
+  const toast = document.getElementById('toast');
+  const nav = document.getElementById('nav');
+  const navLinks = nav.querySelectorAll('a');
+
+  let scale = 1;
+  let isOpen = false;
+
+  // ══════════════════════════════════════
+  // CardStack — 手机后台左右滑动卡片效果
+  // ══════════════════════════════════════
+  function CardStack(container) {
+    this.container = container;
+    this.items = Array.from(container.querySelectorAll('.gallery-item'));
+    if (this.items.length === 0) return;
+    this.current = 0;
+    this.total = this.items.length;
+    this.dragOffset = 0;
+    this.isDragging = false;
+    this.dragMoved = false;
+    this.startX = 0;
+
+    this.init();
+  }
+
+  CardStack.prototype.init = function() {
+    var self = this;
+    if (this.total <= 1) {
+      this.items[0].classList.add('pos-center');
+      return;
+    }
+
+    // Create dot indicators
+    this.dotsEl = document.createElement('div');
+    this.dotsEl.className = 'card-stack-dots';
+    this.items.forEach(function(_, i) {
+      var dot = document.createElement('div');
+      dot.className = 'dot';
+      dot.addEventListener('click', function(e) { e.stopPropagation(); self.goTo(i); });
+      self.dotsEl.appendChild(dot);
+    });
+    this.container.after(this.dotsEl);
+
+    // Click on items — side cards navigate, center card opens lightbox
+    this.items.forEach(function(item, i) {
+      item.addEventListener('click', function(e) {
+        if (self.dragMoved) return;
+        if (i !== self.current) {
+          e.preventDefault();
+          e.stopPropagation();
+          self.goTo(i);
+        }
+      });
+    });
+
+    // Prevent native image drag from interfering with swipe
+    this.items.forEach(function(item) {
+      var img = item.querySelector('img');
+      if (img) {
+        img.draggable = false;
+        img.addEventListener('dragstart', function(e) { e.preventDefault(); });
+      }
+    });
+
+    // Drag events
+    this._onDragStart = function(e) { self.onDragStart(e); };
+    this._onDragMove = function(e) { self.onDragMove(e); };
+    this._onDragEnd = function(e) { self.onDragEnd(e); };
+
+    this.container.addEventListener('mousedown', this._onDragStart);
+    this.container.addEventListener('touchstart', this._onDragStart, { passive: false });
+    window.addEventListener('mousemove', this._onDragMove);
+    window.addEventListener('touchmove', this._onDragMove, { passive: false });
+    window.addEventListener('mouseup', this._onDragEnd);
+    window.addEventListener('touchend', this._onDragEnd);
+
+    this.render(false);
+  };
+
+  CardStack.prototype.onDragStart = function(e) {
+    if (!e.touches) e.preventDefault();
+    this.isDragging = true;
+    this.dragMoved = false;
+    this.startX = (e.touches ? e.touches[0] : e).clientX;
+    this.dragOffset = 0;
+    this.container.classList.add('dragging');
+    this.render(false);
+  };
+
+  CardStack.prototype.onDragMove = function(e) {
+    if (!this.isDragging) return;
+    var x = (e.touches ? e.touches[0] : e).clientX;
+    this.dragOffset = x - this.startX;
+    if (Math.abs(this.dragOffset) > 5) {
+      this.dragMoved = true;
+      if (e.cancelable) e.preventDefault();
+    }
+    this.render(false);
+  };
+
+  CardStack.prototype.onDragEnd = function() {
+    if (!this.isDragging) return;
+    this.isDragging = false;
+    this.container.classList.remove('dragging');
+    var threshold = 80;
+    if (this.dragOffset < -threshold) this.next();
+    else if (this.dragOffset > threshold) this.prev();
+    this.dragOffset = 0;
+    this.render(true);
+  };
+
+  CardStack.prototype.render = function(animate) {
+    var self = this;
+    this.items.forEach(function(item, i) {
+      var offset = i - self.current;
+      var baseX = self.baseX(offset);
+      var sc = self.scaleVal(offset);
+      var br = self.brightnessVal(offset);
+      var op = self.opacityVal(offset);
+      var zi = self.zIdx(offset);
+
+      item.style.transition = (animate && !self.isDragging)
+        ? 'transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1), filter 0.55s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.55s cubic-bezier(0.22, 0.61, 0.36, 1)'
+        : 'none';
+      item.style.transform = 'translateX(' + (baseX + self.dragOffset) + 'px) scale(' + sc + ') translateZ(0)';
+      item.style.filter = 'brightness(' + br + ')';
+      item.style.opacity = op;
+      item.style.zIndex = zi;
+      item.style.pointerEvents = Math.abs(offset) <= 2 ? 'auto' : 'none';
+
+      item.classList.remove('pos-center', 'pos-left1', 'pos-left2', 'pos-right1', 'pos-right2', 'pos-hidden');
+      if      (offset === 0)  item.classList.add('pos-center');
+      else if (offset === 1)  item.classList.add('pos-right1');
+      else if (offset === 2)  item.classList.add('pos-right2');
+      else if (offset === -1) item.classList.add('pos-left1');
+      else if (offset === -2) item.classList.add('pos-left2');
+      else                    item.classList.add('pos-hidden');
+    });
+
+    // Update dots
+    if (this.dotsEl) {
+      Array.from(this.dotsEl.querySelectorAll('.dot')).forEach(function(dot, i) {
+        dot.classList.toggle('active', i === self.current);
+      });
+    }
+  };
+
+  CardStack.prototype.baseX = function(offset) {
+    if (offset === 0) return 0;
+    var sign = offset > 0 ? 1 : -1;
+    var abs = Math.abs(offset);
+    if (abs === 1) return sign * 210;
+    if (abs === 2) return sign * 380;
+    return sign * (380 + (abs - 2) * 180);
+  };
+
+  CardStack.prototype.scaleVal = function(offset) {
+    var abs = Math.abs(offset);
+    if (abs === 0) return 1;
+    if (abs === 1) return 0.85;
+    if (abs === 2) return 0.72;
+    return 0.6;
+  };
+
+  CardStack.prototype.brightnessVal = function(offset) {
+    var abs = Math.abs(offset);
+    if (abs === 0) return 1.08;
+    if (abs === 1) return 0.45;
+    if (abs === 2) return 0.22;
+    return 0.12;
+  };
+
+  CardStack.prototype.opacityVal = function(offset) {
+    var abs = Math.abs(offset);
+    if (abs === 0) return 1;
+    if (abs === 1) return 0.7;
+    if (abs === 2) return 0.4;
+    return 0;
+  };
+
+  CardStack.prototype.zIdx = function(offset) { return 10 - Math.abs(offset); };
+
+  CardStack.prototype.goTo = function(index) {
+    if (index < 0 || index >= this.total || index === this.current) return;
+    this.current = index;
+    this.render(true);
+  };
+
+  CardStack.prototype.next = function() { this.goTo(this.current + 1); };
+  CardStack.prototype.prev = function() { this.goTo(this.current - 1); };
+
+  // Initialize card stacks on all gallery-artistic sections
+  var cardStacks = [];
+  document.querySelectorAll('.gallery-artistic').forEach(function(container) {
+    cardStacks.push(new CardStack(container));
+  });
+
+  // ── Lightbox ──
+  // Only open on center card (pos-center) or non-card-stack items
+  document.querySelectorAll('.gallery-item').forEach(function(item) {
+    item.addEventListener('click', function(e) {
+      if (item.closest('.gallery-artistic') && !item.classList.contains('pos-center')) return;
+      e.preventDefault();
+      var src = item.dataset.src;
+      if (!src) return;
+      lightboxImg.src = src;
+      lightboxImg.style.opacity = '1';
+      lightboxImg.style.visibility = 'visible';
+      scale = 1;
+      lightboxImg.style.transform = 'scale(' + scale + ')';
+      lightbox.classList.add('active');
+      isOpen = true;
+      document.body.style.overflow = 'hidden';
+    });
+  });
+
+  // Close lightbox
+  function closeLightbox() {
+    if (!isOpen) return;
+    lightboxImg.style.opacity = '0';
+    lightboxImg.style.visibility = 'hidden';
+    lightbox.classList.remove('active');
+    isOpen = false;
+    scale = 1;
+    lightboxImg.style.transform = 'scale(' + scale + ')';
+    document.body.style.overflow = '';
+  }
+
+  lightboxClose.addEventListener('click', function(e) {
+    e.stopPropagation();
+    closeLightbox();
+  });
+
+  lightbox.addEventListener('click', function(e) {
+    if (e.target === lightbox) closeLightbox();
+  });
+
+  // Wheel zoom
+  lightboxImg.addEventListener('wheel', function(e) {
+    if (!isOpen) return;
+    e.preventDefault();
+    var delta = e.deltaY > 0 ? -0.12 : 0.12;
+    scale = Math.max(0.3, Math.min(5, scale + delta));
+    lightboxImg.style.transform = 'scale(' + scale + ')';
+  });
+
+  // Touch pinch zoom
+  var lastDist = 0;
+  lightboxImg.addEventListener('touchstart', function(e) {
+    if (e.touches.length === 2) {
+      lastDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+    }
+  });
+
+  lightboxImg.addEventListener('touchmove', function(e) {
+    if (!isOpen || e.touches.length !== 2) return;
+    e.preventDefault();
+    var dist = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    );
+    if (lastDist > 0) {
+      var delta = (dist - lastDist) * 0.01;
+      scale = Math.max(0.3, Math.min(5, scale + delta));
+      lightboxImg.style.transform = 'scale(' + scale + ')';
+    }
+    lastDist = dist;
+  });
+
+  lightboxImg.addEventListener('touchend', function() { lastDist = 0; });
+
+  // Esc to close
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && isOpen) closeLightbox();
+  });
+
+  // Copy contact
+  document.querySelectorAll('.copy-btn').forEach(function(btn) {
+    btn.addEventListener('click', async function(e) {
+      e.stopPropagation();
+      var text = btn.dataset.copy;
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (_) {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+      showToast('已复制到剪贴板');
+    });
+  });
+
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toast._timeout);
+    toast._timeout = setTimeout(function() { toast.classList.remove('show'); }, 2000);
+  }
+
+  // Scroll: nav active + reveal
+  var sections = [];
+  navLinks.forEach(function(link) {
+    var id = link.getAttribute('href');
+    if (id.startsWith('#') && id.length > 1) {
+      var el = document.getElementById(id.slice(1));
+      if (el) sections.push({ el: el, link: link });
+    }
+  });
+
+  var revealEls = document.querySelectorAll('.reveal');
+
+  function onScroll() {
+    var scrollY = window.scrollY + window.innerHeight / 3;
+    var current = sections[0];
+    sections.forEach(function(s) {
+      if (s.el.offsetTop <= scrollY) current = s;
+    });
+    navLinks.forEach(function(l) { l.classList.remove('active'); });
+    if (current) current.link.classList.add('active');
+
+    revealEls.forEach(function(el) {
+      if (el.classList.contains('visible')) return;
+      var top = el.getBoundingClientRect().top;
+      if (top < window.innerHeight * 0.88) el.classList.add('visible');
+    });
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('load', onScroll);
+  onScroll();
+
+  // Smooth scroll
+  navLinks.forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      var id = link.getAttribute('href');
+      if (!id || id === '#') return;
+      var target = document.getElementById(id.slice(1));
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+})();
+</script>
+</body>
+</html>
